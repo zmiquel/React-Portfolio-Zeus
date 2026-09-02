@@ -1,143 +1,142 @@
-import React, { useState } from "react";
-import {
-  FaBars,
-  FaTimes,
-  FaGithub,
-  FaLinkedin,
-  FaFacebook,
-  FaLinkedinIn,
-} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaBars, FaTimes, FaGithub, FaLinkedin } from "react-icons/fa";
 import { HiOutlineMail } from "react-icons/hi";
-import { BsFillPersonLinesFill } from "react-icons/bs";
 import Logo from "../assets/logo.png";
 import { Link } from "react-scroll";
+import { social } from "../collections/social.jsx";
+
+const links = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "Contact" },
+];
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const handleClick = () => setNav(!nav);
+  const closeNav = () => setNav(false);
+
+  // Solidify the bar once the user leaves the hero
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Never leave the page locked behind an open mobile menu
+  useEffect(() => {
+    document.body.style.overflow = nav ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [nav]);
 
   return (
-    <div className="fixed w-full h-[80px] flex justify-between items-center px-4 bg-[#000000] text-gray-300 z-50">
-      <div>
-        <img src={Logo} alt="Logo Image" style={{ width: "200px" }} />
-      </div>
+    <header
+      className={`fixed top-0 w-full h-[80px] flex justify-between items-center px-4 sm:px-8 text-gray-300 z-50 transition-colors duration-300 ${
+        scrolled || nav
+          ? "bg-black/90 backdrop-blur-md border-b border-white/10"
+          : "bg-transparent"
+      }`}
+    >
+      <Link to="home" smooth={true} duration={500} className="cursor-pointer">
+        <img
+          src={Logo}
+          alt="Zeus Miguel Orilla logo"
+          className="w-[150px] sm:w-[200px]"
+        />
+      </Link>
 
-      {/* menu */}
-      <ul className="hidden md:flex">
-        <li >
-          <Link to="home" smooth={true} duration={500}>
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link to="about" smooth={true} duration={500}>
-            About
-          </Link>
-        </li>
-        <li>
-          <Link to="skills" smooth={true} duration={500}>
-            Skills
-          </Link>
-        </li>
-        <li>
-          <Link to="projects" smooth={true} duration={500}>
-            Projects
-          </Link>
-        </li>
-        <li>
-          <Link to="contact" smooth={true} duration={500}>
-            Contact
-          </Link>
-        </li>
-      </ul>
+      {/* Desktop menu */}
+      <nav className="hidden md:block">
+        <ul className="flex items-center">
+          {links.map(({ id, label }) => (
+            <li key={id}>
+              <Link
+                to={id}
+                smooth={true}
+                duration={500}
+                spy={true}
+                offset={-80}
+                activeClass="text-green-400"
+                className="cursor-pointer py-2 transition-colors hover:text-green-400"
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
+          <li className="pl-6">
+            <a
+              href={social.github}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub"
+              className="hover:text-green-400 transition-colors"
+            >
+              <FaGithub size={20} />
+            </a>
+          </li>
+        </ul>
+      </nav>
 
       {/* Hamburger */}
-      <div onClick={handleClick} className="md:hidden z-10">
-        {!nav ? <FaBars /> : <FaTimes />}
-      </div>
+      <button
+        onClick={handleClick}
+        aria-label={nav ? "Close menu" : "Open menu"}
+        aria-expanded={nav}
+        className="md:hidden z-50 text-gray-200 p-2 -mr-2"
+      >
+        {!nav ? <FaBars size={26} /> : <FaTimes size={26} />}
+      </button>
 
       {/* Mobile menu */}
       <ul
-        className={
-          !nav
-            ? "hidden"
-            : "absolute top-0 left-0 w-full h-screen bg-[#061904] flex flex-col justify-center items-center"
-        }
+        className={`${
+          nav ? "flex" : "hidden"
+        } md:hidden absolute top-0 left-0 w-full h-screen bg-black/95 backdrop-blur-md flex-col justify-center items-center`}
       >
-        <li className="py-6 text-4xl">
-          <Link onClick={handleClick} to="home" smooth={true} duration={500}>
-            Home
-          </Link>
-        </li>
-        <li className="py-6 text-4xl">
-          {" "}
-          <Link onClick={handleClick} to="about" smooth={true} duration={500}>
-            About
-          </Link>
-        </li>
-        <li className="py-6 text-4xl">
-          {" "}
-          <Link onClick={handleClick} to="skills" smooth={true} duration={500}>
-            Skills
-          </Link>
-        </li>
-        <li className="py-6 text-4xl">
-          {" "}
-          <Link onClick={handleClick} to="work" smooth={true} duration={500}>
-            Projects
-          </Link>
-        </li>
-        <li className="py-6 text-4xl">
-          {" "}
-          <Link onClick={handleClick} to="contact" smooth={true} duration={500}>
-            Contact
-          </Link>
+        {links.map(({ id, label }) => (
+          <li key={id} className="py-6 text-4xl">
+            <Link
+              onClick={closeNav}
+              to={id}
+              smooth={true}
+              duration={500}
+              offset={-80}
+              className="cursor-pointer hover:text-green-400 transition-colors"
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+        <li className="flex gap-8 pt-8">
+          <a
+            href={social.github}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+          >
+            <FaGithub size={28} />
+          </a>
+          <a
+            href={social.linkedin}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+          >
+            <FaLinkedin size={28} />
+          </a>
+          <a href={`mailto:${social.email}`} aria-label="Email">
+            <HiOutlineMail size={28} />
+          </a>
         </li>
       </ul>
-    </div>
+    </header>
   );
 };
 
 export default Navbar;
-{
-  /* Social icons */
-}
-{
-  /* <div className="hidden lg:flex fixed flex-col top-[35%] left-0">
-        <ul>
-          <li className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-300 bg-blue-600">
-            <a
-              className="flex justify-between items-center w-full text-gray-300"
-              href="/"
-            >
-              Linkedin <FaLinkedin size={30} />
-            </a>
-          </li>
-          <li className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-300 bg-[#333333]">
-            <a
-              className="flex justify-between items-center w-full text-gray-300"
-              href="/"
-            >
-              Github <FaGithub size={30} />
-            </a>
-          </li>
-          <li className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-300 bg-[#6fc2b0]">
-            <a
-              className="flex justify-between items-center w-full text-gray-300"
-              href="/"
-            >
-              Email <HiOutlineMail size={30} />
-            </a>
-          </li>
-          <li className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-300 bg-[#565f69]">
-            <a
-              className="flex justify-between items-center w-full text-gray-300"
-              href="/"
-            >
-              Resume <BsFillPersonLinesFill size={30} />
-            </a>
-          </li>
-        </ul>
-      </div>
-   */
-}

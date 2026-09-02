@@ -10,16 +10,19 @@
     opacity: 0;
   }
 
+  /* Composed with the -translate-x-1/2 centering, so the horizontal
+     centering isn't clobbered by these animation transforms. */
   .logo.to-top {
-    transform: scale(0.4) translateY(-150px);
+    transform: translateX(-50%) scale(0.4) translateY(-150px);
   }
 
   .logo.to-bottom {
-    transform: scale(0.4) translateY(150px);
+    transform: translateX(-50%) scale(0.4) translateY(150px);
   }
   .logo {
     transition: all 2.4s cubic-bezier(0.25, 1, 0.5, 1);
     filter: invert(97%) grayscale(100%) opacity(0.6);
+    transform: translateX(-50%);
   }
  
 
@@ -37,8 +40,17 @@
 
 
 @layer base {
+    html {
+        /* Belt-and-braces: nothing should ever scroll the page sideways. */
+        @apply overflow-x-hidden;
+        scroll-behavior: smooth;
+    }
     body {
-        @apply font-[Raleway];
+        @apply font-[Raleway] overflow-x-hidden bg-[#0f0f0f];
+    }
+    /* Visible focus ring for keyboard users. */
+    :focus-visible {
+        @apply outline-none ring-2 ring-green-500 ring-offset-2 ring-offset-black;
     }
     li {
         @apply px-4;
@@ -74,4 +86,20 @@
 .cursor_dot div:first-child {
   filter: invert(1);
   background-color: rgba(89, 89, 89, 0.407) !important;
+}
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .logo {
+    transition: none !important;
+  }
 }

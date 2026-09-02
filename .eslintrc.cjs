@@ -16,5 +16,14 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    // Prop-types add little here; the components are internal and typed by use.
+    'react/prop-types': 'off',
   },
+  overrides: [
+    {
+      // Vendored cursor implementation - left as-is on purpose.
+      files: ['src/hooks/AmazingCursor.jsx'],
+      rules: { 'no-unused-vars': 'off' },
+    },
+  ],
 }
