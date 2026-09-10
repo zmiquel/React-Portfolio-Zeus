@@ -87,10 +87,96 @@
   filter: invert(1);
   background-color: rgba(89, 89, 89, 0.407) !important;
 }
+/* ---- Navbar electric edge ---------------------------------------------
+   Sits just under the header (top:100%) so the glow can bleed downward
+   without being clipped by the 80px bar. Purely decorative. */
+.nav-lightning {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 9px;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Alive only while the page is actually scrolling. */
+.nav-lightning[data-active="true"] {
+  opacity: 1;
+}
+
+/* The rail the arc runs along. */
+.nav-lightning::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(96, 238, 134, 0.55) 18%,
+    rgba(96, 238, 134, 0.55) 82%,
+    transparent
+  );
+}
+
+/* The arc that races along the rail. */
+.nav-lightning::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 18%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #60ee86 38%,
+    #eafff1 50%,
+    #60ee86 62%,
+    transparent
+  );
+  filter: drop-shadow(0 0 5px #60ee86)
+    drop-shadow(0 0 12px rgba(96, 238, 134, 0.75));
+  will-change: transform;
+  animation: nav-arc 0.9s linear infinite,
+    nav-flicker 0.16s steps(2, end) infinite;
+}
+
+@keyframes nav-arc {
+  from {
+    transform: translateX(-130%);
+  }
+  to {
+    transform: translateX(600%);
+  }
+}
+
+@keyframes nav-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 /* Respect users who ask for less motion. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  /* Drop the travelling arc entirely; keep a calm static rail. */
+  .nav-lightning::after {
+    display: none;
+  }
+  .nav-lightning::before {
+    opacity: 0.9;
   }
   *,
   *::before,

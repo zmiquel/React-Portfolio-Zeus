@@ -16,15 +16,26 @@ const links = [
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [scrolling, setScrolling] = useState(false);
   const handleClick = () => setNav(!nav);
   const closeNav = () => setNav(false);
 
-  // Solidify the bar once the user leaves the hero
+  // Solidify the bar once the user leaves the hero, and flag *active*
+  // scrolling — the lightning edge only exists while the page is moving.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    let idleTimer;
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      setScrolling(true);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => setScrolling(false), 180);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(idleTimer);
+    };
   }, []);
 
   // Never leave the page locked behind an open mobile menu
@@ -137,6 +148,14 @@ const Navbar = () => {
           </a>
         </li>
       </ul>
+
+      {/* Electric edge: only alive while the page is actually moving.
+          The moment scrolling stops it fades back to a plain bar. */}
+      <span
+        aria-hidden="true"
+        className="nav-lightning"
+        data-active={scrolling ? "true" : "false"}
+      />
     </header>
   );
 };
