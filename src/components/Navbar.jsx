@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaBars, FaTimes, FaGithub, FaLinkedin } from "react-icons/fa";
 import { HiOutlineMail } from "react-icons/hi";
-import Logo from "../assets/logo.png";
+import Logo from "../assets/logozeus.png";
 import { Link } from "react-scroll";
 import { social } from "../collections/social.jsx";
 
@@ -44,10 +44,12 @@ const Navbar = () => {
       }`}
     >
       <Link to="home" smooth={true} duration={500} className="cursor-pointer">
+        {/* Sized by height: the mark is near-square, so constraining width
+            would overflow the 80px bar. */}
         <img
           src={Logo}
           alt="Zeus Miguel Orilla logo"
-          className="w-[150px] sm:w-[200px]"
+          className="h-11 sm:h-14 w-auto"
         />
       </Link>
 
